@@ -1,0 +1,50 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # .NET Application metrics
+  - job_name: 'dotnet-app'
+    static_configs:
+      - targets: ['app:80']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Redis metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+
+  # SQL Server metrics (if you add an exporter)
+  - job_name: 'sqlserver'
+    static_configs:
+      - targets: ['database:1433']
+
+  # Nginx metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['nginx:80']
+
+  # SonarQube metrics
+  - job_name: 'sonarqube'
+    static_configs:
+      - targets: ['sonarqube:9000']
+
+  # Nexus metrics
+  - job_name: 'nexus'
+    static_configs:
+      - targets: ['nexus:8081']
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['162.19.254.26:9100']
