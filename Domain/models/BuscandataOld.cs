@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace Domain.models;
+
+public partial class BuscandataOld
+{
+    public int Id { get; set; }
+
+    public DateTime? AcquisitionTime { get; set; }
+
+    public string? Equipment { get; set; }
+}

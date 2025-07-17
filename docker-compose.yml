@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  app:
+    image: localhost:5000/dotnet-app:${BUILD_NUMBER:-latest}
+    container_name: webapi-app
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Server=database;Database=AirLiquide;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;Encrypt=False
+      - Redis__ConnectionString=redis:6379
+      - AppSettings__Token=N2Fz7YPvnLgZHlIY5H8kzdpQvxz0ICMTNzJHnsGhj8j4rKlVQFdtyPpAn1M=Bon3doDOCEQIdz
+      - AppSettings__Issuer=myIssuer
+      - AppSettings__Audience=myAudience
+    depends_on:
+      - database
+      - redis
+    networks:
+      - app-network
+    restart: unless-stopped
+    volumes:
+      - app-logs:/app/logs
+      - app-data:/app/data
+
+  database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - app
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  redis-data:
+  app-logs:
+  app-data:
+  nginx-logs:
+
+networks:
+  app-network:
+    driver: bridge

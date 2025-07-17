@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Tunav_AirLiquide.WebApi.props" />
+</Project>

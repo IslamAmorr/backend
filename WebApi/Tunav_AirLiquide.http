@@ -1,0 +1,6 @@
+@Tunav_AirLiquide_HostAddress = http://localhost:5098
+
+GET {{Tunav_AirLiquide_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
